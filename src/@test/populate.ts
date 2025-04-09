@@ -1,8 +1,8 @@
-import { TestEnvironment } from "@/@test/useFullModule";
-import { UserBalanceEntity } from "@/entity/user-balance.entity";
-import { StoreProductEntity } from "@/entity/store-product.entity";
-import { StoreProductPurchaseEntity } from "@/entity/store-product-purchase.entity";
-import { StoreCategoryEntity } from "@/entity/store-category.entity";
+import { TestEnvironment } from '@/@test/useFullModule';
+import { UserBalanceEntity } from '@/entity/user-balance.entity';
+import { StoreProductEntity } from '@/entity/store-product.entity';
+import { StoreProductPurchaseEntity } from '@/entity/store-product-purchase.entity';
+import { StoreCategoryEntity } from '@/entity/store-category.entity';
 
 export interface PopulateExtensions {
   user: {
@@ -50,32 +50,32 @@ export function createPopulate(te: TestEnvironment): PopulateExtensions {
     category: {
       create(category: string): Promise<StoreCategoryEntity> {
         return te.repo<StoreCategoryEntity>(StoreCategoryEntity).save({
-          categor,
-        });
-      ,
-    },
-
-    product: {
-      createProduct(
-        price: number,
-        category: string,
-        title = "Product",
-        image = "public/image.png"
-      ) {
-        return te.repo<StoreProductEntity>(StoreProductEntity).save({
-          price,
-          title,
-          image,
-          categoryId: category
+          category,
         });
       },
-    },
 
-    purchase: {
-      getPurchase(id: string): Promise<StoreProductPurchaseEntity> {
-        return te
-          .repo<StoreProductPurchaseEntity>(StoreProductPurchaseEntity)
-          .findOneOrFail({ where: { id } });
+      product: {
+        createProduct(
+          price: number,
+          category: string,
+          title = 'Product',
+          image = 'public/image.png',
+        ) {
+          return te.repo<StoreProductEntity>(StoreProductEntity).save({
+            price,
+            title,
+            image,
+            categoryId: category,
+          });
+        },
+      },
+
+      purchase: {
+        getPurchase(id: string): Promise<StoreProductPurchaseEntity> {
+          return te
+            .repo<StoreProductPurchaseEntity>(StoreProductPurchaseEntity)
+            .findOneOrFail({ where: { id } });
+        },
       },
     },
   };
