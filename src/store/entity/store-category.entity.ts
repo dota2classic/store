@@ -1,5 +1,5 @@
 import { Entity, OneToMany, PrimaryColumn, Relation } from 'typeorm';
-import { StoreProductEntity } from '@/entity/store-product.entity';
+import { StoreProductEntity } from '@/store/entity/store-product.entity';
 
 @Entity('store_category')
 export class StoreCategoryEntity {

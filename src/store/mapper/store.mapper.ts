@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { StoreCategoryEntity } from '@/entity/store-category.entity';
+import { StoreCategoryEntity } from '@/store/entity/store-category.entity';
 import {
   CategoryWithProductPageDto,
   ProductDto,
-} from '@/controller/dto/store.dto';
-import { StoreProductEntity } from '@/entity/store-product.entity';
+} from '@/store/controller/dto/store.dto';
+import { StoreProductEntity } from '@/store/entity/store-product.entity';
 
 @Injectable()
 export class StoreMapper {

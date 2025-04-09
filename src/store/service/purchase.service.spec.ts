@@ -1,8 +1,8 @@
 import { useFullModule } from '@/@test/useFullModule';
-import { PurchaseService } from '@/service/purchase.service';
-import { NoBalanceException } from '@/exception/no-balance.exception';
+import { PurchaseService } from '@/store/service/purchase.service';
 import { NotFoundException } from '@nestjs/common';
 import { v4 } from 'uuid';
+import { NoBalanceException } from '@/store/exception/no-balance.exception';
 
 describe('PurchaseService', () => {
   const [te, data] = useFullModule();

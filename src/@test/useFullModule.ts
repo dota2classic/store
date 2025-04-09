@@ -8,8 +8,8 @@ import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-clas
 import { INestApplication } from '@nestjs/common';
 import { ObjectLiteral, Repository } from 'typeorm';
 import { Entities } from '@/database/entities';
-import { AppModule } from '@/app.module';
 import { createPopulate, PopulateExtensions } from '@/@test/populate';
+import { StoreModule } from '@/store/store.module';
 
 interface Constructor<T> {
   new (...args: any[]): T;
@@ -72,7 +72,7 @@ export function useFullModule(): [TestEnvironment, PopulateExtensions] {
           ssl: false,
         }),
         TypeOrmModule.forFeature(Entities),
-        AppModule,
+        StoreModule,
       ],
       providers: [],
     }).compile();

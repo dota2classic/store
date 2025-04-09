@@ -1,4 +1,11 @@
-import { Check, Column, Entity, OneToMany, PrimaryColumn, Relation } from "typeorm";
+import {
+  Check,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryColumn,
+  Relation,
+} from 'typeorm';
 import { StoreProductPurchaseEntity } from './store-product-purchase.entity';
 
 @Entity('user_balance')

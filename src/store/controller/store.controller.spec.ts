@@ -1,6 +1,6 @@
 import { useFullModule } from '@/@test/useFullModule';
 import * as request from 'supertest';
-import { StoreMapper } from '@/mapper/store.mapper';
+import { StoreMapper } from '@/store/mapper/store.mapper';
 
 describe('StoreController', () => {
   const [te, data] = useFullModule();

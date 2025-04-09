@@ -3,12 +3,8 @@ import configuration from './config/configuration';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm/dist/interfaces/typeorm-options.interface';
-import { getTypeormConfig } from './database/typeorm.config';
-import { Entities } from './database/entities';
-import { PurchaseService } from '@/service/purchase.service';
-import { StoreController } from '@/controller/store.controller';
-import { StoreService } from '@/service/store.service';
-import { StoreMapper } from '@/mapper/store.mapper';
+import { StoreModule } from './store/store.module';
+import { getTypeormConfig } from '@/database/typeorm.config';
 
 @Module({
   imports: [
@@ -29,9 +25,7 @@ import { StoreMapper } from '@/mapper/store.mapper';
       imports: [],
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature(Entities),
+    StoreModule,
   ],
-  controllers: [StoreController],
-  providers: [PurchaseService, StoreService, StoreMapper],
 })
 export class AppModule {}
