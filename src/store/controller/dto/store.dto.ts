@@ -30,3 +30,17 @@ export class MakePurchaseDto {
   steamId: string;
   productId: string;
 }
+
+export class CreateProductDto {
+  category: string;
+  title: string;
+  imageKey: string;
+  price: number;
+}
+
+export class UpdateProductDto {
+  category?: string;
+  title?: string;
+  imageKey?: string;
+  price?: number;
+}

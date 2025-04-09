@@ -1,11 +1,22 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { StoreCategoryEntity } from '@/store/entity/store-category.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
   CategoryWithProductPageDto,
+  CreateProductDto,
   MakePurchaseDto,
   StoreProductPurchaseDto,
+  UpdateProductDto,
 } from '@/store/controller/dto/store.dto';
 import { StoreService } from '@/store/service/store.service';
 import { StoreMapper } from '@/store/mapper/store.mapper';
@@ -51,5 +62,28 @@ export class StoreController {
     return this.purchaseService
       .purchase(dto.steamId, dto.productId)
       .then(this.mapper.mapPurchase);
+  }
+
+  // Product
+  @Post('/product')
+  public async createProduct(@Body() dto: CreateProductDto) {
+    return this.storeService
+      .createProduct(dto.category, dto.title, dto.imageKey, dto.price)
+      .then(this.mapper.mapProduct);
+  }
+
+  @Patch('/product/:id')
+  public async updateProduct(
+    @Param('id') id: string,
+    @Body() dto: UpdateProductDto,
+  ) {
+    return this.storeService
+      .updateProduct(id, dto.category, dto.title, dto.imageKey, dto.price)
+      .then(this.mapper.mapProduct);
+  }
+
+  @Delete('/product/:id')
+  public async deleteProduct(@Param('id') id: string) {
+    await this.storeService.deleteProduct(id);
   }
 }
