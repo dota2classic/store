@@ -32,6 +32,11 @@ export default (config = YAML_CONFIG_FILENAME): ExpectedConfig => {
     ) as ExpectedConfig;
   } catch (e) {
     console.error(`Error loading config file ${config}`);
-    return {};
+    return {
+      fluentbit: { host: '', port: 0 },
+      postgres: { host: '', password: '', username: '' },
+      redis: { host: '', password: '' },
+      telemetry: { jaeger: { url: '' } },
+    };
   }
 };
