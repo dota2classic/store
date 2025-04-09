@@ -3,8 +3,10 @@ import { StoreCategoryEntity } from '@/store/entity/store-category.entity';
 import {
   CategoryWithProductPageDto,
   ProductDto,
+  StoreProductPurchaseDto,
 } from '@/store/controller/dto/store.dto';
 import { StoreProductEntity } from '@/store/entity/store-product.entity';
+import { StoreProductPurchaseEntity } from '@/store/entity/store-product-purchase.entity';
 
 @Injectable()
 export class StoreMapper {
@@ -21,6 +23,15 @@ export class StoreMapper {
     return {
       category: category.category,
       products: category.products.map(this.mapProduct),
+    };
+  };
+  public mapPurchase = (
+    purchase: StoreProductPurchaseEntity,
+  ): StoreProductPurchaseDto => {
+    return {
+      id: purchase.id,
+      steamId: purchase.steamId,
+      productId: purchase.productId,
     };
   };
 }

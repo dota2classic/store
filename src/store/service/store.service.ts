@@ -19,4 +19,8 @@ export class StoreService {
       relations: ['products'],
     });
   }
+
+  public async getPurchases(steamId: string) {
+    return [];
+  }
 }

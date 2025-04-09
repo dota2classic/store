@@ -62,4 +62,15 @@ export class PurchaseService {
       return purchase;
     });
   }
+
+  public async getPurchases(
+    steamId: string,
+  ): Promise<StoreProductPurchaseEntity[]> {
+    return this.storeProductPurchaseEntityRepository.find({
+      where: {
+        steamId,
+      },
+      relations: ['product'],
+    });
+  }
 }

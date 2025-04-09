@@ -19,3 +19,14 @@ export class CategoryWithProductPageDto {
   category: string;
   products: ProductDto[];
 }
+
+export class StoreProductPurchaseDto {
+  id: string;
+  productId: string;
+  steamId: string;
+}
+
+export class MakePurchaseDto {
+  steamId: string;
+  productId: string;
+}
