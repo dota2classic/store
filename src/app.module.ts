@@ -6,6 +6,9 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm/dist/interfaces/typeorm-op
 import { getTypeormConfig } from './database/typeorm.config';
 import { Entities } from './database/entities';
 import { PurchaseService } from '@/service/purchase.service';
+import { StoreController } from '@/controller/store.controller';
+import { StoreService } from '@/service/store.service';
+import { StoreMapper } from '@/mapper/store.mapper';
 
 @Module({
   imports: [
@@ -28,7 +31,7 @@ import { PurchaseService } from '@/service/purchase.service';
     }),
     TypeOrmModule.forFeature(Entities),
   ],
-  controllers: [],
-  providers: [PurchaseService],
+  controllers: [StoreController],
+  providers: [PurchaseService, StoreService, StoreMapper],
 })
 export class AppModule {}

@@ -16,8 +16,9 @@ describe('PurchaseService', () => {
   describe('Purchase products', () => {
     it('should purchase if it has money', async () => {
       // given
+      const category = await data.category.create('cat');
       const user = await data.user.createUser(500);
-      const product = await data.product.createProduct(100);
+      const product = await data.product.createProduct(100, category.category);
 
       // when
       const purchase = await ps.purchase(user.steamId, product.id);
@@ -37,9 +38,10 @@ describe('PurchaseService', () => {
     });
 
     it('should purchase zero cost if balance doesnt exist', async () => {
-      const randomUser = "123452323434"
+      const randomUser = '123452323434';
       // given
-      const product = await data.product.createProduct(0);
+      const category = await data.category.create('cat');
+      const product = await data.product.createProduct(0, category.category);
 
       // when
       const purchase = await ps.purchase(randomUser, product.id);
@@ -60,8 +62,9 @@ describe('PurchaseService', () => {
 
     it('should not purchase if no money', async () => {
       // given
+      const category = await data.category.create('cat');
       const user = await data.user.createUser(50);
-      const product = await data.product.createProduct(100);
+      const product = await data.product.createProduct(100, category.category);
 
       // when + then
       await expect(ps.purchase(user.steamId, product.id)).rejects.toThrow(
@@ -71,18 +74,20 @@ describe('PurchaseService', () => {
 
     it('should not purchase if baance doesn"t exist cause no money', async () => {
       // given
-      const product = await data.product.createProduct(100);
+      const category = await data.category.create('cat');
+      const product = await data.product.createProduct(100, category.category);
 
       // when + then
-      await expect(ps.purchase("1234123412", product.id)).rejects.toThrow(
+      await expect(ps.purchase('1234123412', product.id)).rejects.toThrow(
         NoBalanceException,
       );
     });
 
     it('should not purchase if no product', async () => {
       // given
+      const category = await data.category.create('cat');
       const user = await data.user.createUser(50);
-      const product = await data.product.createProduct(100);
+      const product = await data.product.createProduct(100, category.category);
 
       // when + then
       await expect(ps.purchase(user.steamId, v4())).rejects.toThrow(

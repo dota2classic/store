@@ -1,7 +1,8 @@
-import { TestEnvironment } from '@/@test/useFullModule';
-import { UserBalanceEntity } from '@/entity/user-balance.entity';
-import { StoreProductEntity } from '@/entity/store-product.entity';
-import { StoreProductPurchaseEntity } from '@/entity/store-product-purchase.entity';
+import { TestEnvironment } from "@/@test/useFullModule";
+import { UserBalanceEntity } from "@/entity/user-balance.entity";
+import { StoreProductEntity } from "@/entity/store-product.entity";
+import { StoreProductPurchaseEntity } from "@/entity/store-product-purchase.entity";
+import { StoreCategoryEntity } from "@/entity/store-category.entity";
 
 export interface PopulateExtensions {
   user: {
@@ -10,7 +11,16 @@ export interface PopulateExtensions {
   };
 
   product: {
-    createProduct(price: number, title?: string): Promise<StoreProductEntity>;
+    createProduct(
+      price: number,
+      category: string,
+      title?: string,
+      imageKey?: string,
+    ): Promise<StoreProductEntity>;
+  };
+
+  category: {
+    create(category: string): Promise<StoreCategoryEntity>;
   };
 
   purchase: {
@@ -37,11 +47,26 @@ export function createPopulate(te: TestEnvironment): PopulateExtensions {
       },
     },
 
+    category: {
+      create(category: string): Promise<StoreCategoryEntity> {
+        return te.repo<StoreCategoryEntity>(StoreCategoryEntity).save({
+          categor,
+        });
+      ,
+    },
+
     product: {
-      createProduct(price: number, title = 'Product') {
+      createProduct(
+        price: number,
+        category: string,
+        title = "Product",
+        image = "public/image.png"
+      ) {
         return te.repo<StoreProductEntity>(StoreProductEntity).save({
           price,
           title,
+          image,
+          categoryId: category
         });
       },
     },
