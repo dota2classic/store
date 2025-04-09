@@ -7,10 +7,10 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   Relation,
-  UpdateDateColumn
-} from "typeorm";
-import { StoreProductPurchaseEntity } from "./store-product-purchase.entity";
-import { StoreCategoryEntity } from"@/entity/store-category.entity"';
+  UpdateDateColumn,
+} from 'typeorm';
+import { StoreProductPurchaseEntity } from './store-product-purchase.entity';
+import { StoreCategoryEntity } from '@/entity/store-category.entity';
 
 @Entity('store_product')
 export class StoreProductEntity {
@@ -24,7 +24,7 @@ export class StoreProductEntity {
   price: number;
 
   @Column({
-    name: "image_key"
+    name: 'image_key',
   })
   image: string;
 
@@ -38,24 +38,23 @@ export class StoreProductEntity {
 
   @ManyToOne(() => StoreCategoryEntity, (p) => p.products)
   @JoinColumn({
-    referencedColumnName: "category",
-    name: "category"
+    referencedColumnName: 'category',
+    name: 'category',
   })
   category: Relation<StoreCategoryEntity>;
 
   @Column({
-    name: "category"
+    name: 'category',
   })
   categoryId: string;
 
-
   @CreateDateColumn({
-    name: "created_at"
+    name: 'created_at',
   })
   createdAt: Date;
 
   @UpdateDateColumn({
-    name: "update_at"
+    name: 'update_at',
   })
   updateAt: Date;
 }
