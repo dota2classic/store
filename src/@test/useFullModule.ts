@@ -49,7 +49,6 @@ export function useFullModule(): [TestEnvironment, PopulateExtensions] {
     te.containers.pg = await new PostgreSqlContainer()
       .withUsername('username')
       .withPassword('password')
-      .withReuse()
       .start();
 
     // te.containers.redis = await new RedisContainer()
@@ -84,7 +83,7 @@ export function useFullModule(): [TestEnvironment, PopulateExtensions] {
 
     te.app = await te.module.createNestApplication();
 
-    await te.app.listen(4444);
+    await te.app.listen(0);
 
     te.service = (con) => te.module.get(con);
     te.repo = (con) => te.module.get(getRepositoryToken(con));
