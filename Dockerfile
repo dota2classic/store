@@ -10,16 +10,13 @@ WORKDIR /usr/src/app
 # where available (npm@5+)
 COPY package*.json ./
 
+
 RUN npm install
 # If you are building your code for production
 # RUN npm ci --only=production
 
-# Bundle app source
-COPY package.json ./
-RUN yarn install --no-lockfile
 COPY . .
 RUN npm run build
-RUN yarn build
 
 FROM base AS production
 
