@@ -10,7 +10,6 @@ import { ObjectLiteral, Repository } from 'typeorm';
 import { Entities } from '@/database/entities';
 import { AppModule } from '@/app.module';
 import { createPopulate, PopulateExtensions } from '@/@test/populate';
-import { ConfigModule } from '@nestjs/config';
 
 interface Constructor<T> {
   new (...args: any[]): T;
@@ -57,9 +56,6 @@ export function useFullModule(): [TestEnvironment, PopulateExtensions] {
 
     te.module = await Test.createTestingModule({
       imports: [
-        await ConfigModule.forRoot({
-          isGlobal: true,
-        }),
         TypeOrmModule.forRoot({
           host: te.containers.pg.getHost(),
           port: te.containers.pg.getFirstMappedPort(),

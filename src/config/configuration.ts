@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import * as yaml from 'js-yaml';
 import { join } from 'path';
 
-const YAML_CONFIG_FILENAME = "config.yaml";
+const YAML_CONFIG_FILENAME = 'config.yaml';
 
 export interface ExpectedConfig {
   redis: {
@@ -26,7 +26,12 @@ export interface ExpectedConfig {
 }
 
 export default (config = YAML_CONFIG_FILENAME): ExpectedConfig => {
-  return yaml.load(
-    readFileSync(join("./", config), "utf8"),
-  ) as ExpectedConfig;
+  try {
+    return yaml.load(
+      readFileSync(join('./', config), 'utf8'),
+    ) as ExpectedConfig;
+  } catch (e) {
+    console.error(`Error loading config file ${config}`);
+    return {};
+  }
 };
