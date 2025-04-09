@@ -53,29 +53,29 @@ export function createPopulate(te: TestEnvironment): PopulateExtensions {
           category,
         });
       },
+    },
 
-      product: {
-        createProduct(
-          price: number,
-          category: string,
-          title = 'Product',
-          image = 'public/image.png',
-        ) {
-          return te.repo<StoreProductEntity>(StoreProductEntity).save({
-            price,
-            title,
-            image,
-            categoryId: category,
-          });
-        },
+    product: {
+      createProduct(
+        price: number,
+        category: string,
+        title = 'Product',
+        image = 'public/image.png',
+      ) {
+        return te.repo<StoreProductEntity>(StoreProductEntity).save({
+          price,
+          title,
+          image,
+          categoryId: category,
+        });
       },
+    },
 
-      purchase: {
-        getPurchase(id: string): Promise<StoreProductPurchaseEntity> {
-          return te
-            .repo<StoreProductPurchaseEntity>(StoreProductPurchaseEntity)
-            .findOneOrFail({ where: { id } });
-        },
+    purchase: {
+      getPurchase(id: string): Promise<StoreProductPurchaseEntity> {
+        return te
+          .repo<StoreProductPurchaseEntity>(StoreProductPurchaseEntity)
+          .findOneOrFail({ where: { id } });
       },
     },
   };
