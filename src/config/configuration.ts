@@ -31,7 +31,7 @@ export default (config = YAML_CONFIG_FILENAME): ExpectedConfig => {
       readFileSync(join('./', config), 'utf8'),
     ) as ExpectedConfig;
   } catch (e) {
-    console.warn(`Error loading config file ${config}`);
+    // console.warn(`Error loading config file ${config}`);
     return {
       fluentbit: { host: '', port: 0 },
       postgres: { host: '', password: '', username: '' },
