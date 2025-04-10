@@ -2,11 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
+  Relation,
   TableInheritance,
   UpdateDateColumn,
 } from 'typeorm';
 import { StoreItemType } from '@/gateway/shared-types/store-item-type';
+import { OwnedItemEntity } from '@/store/entity/owned-item.entity';
 
 @Entity('generic_store_item')
 @TableInheritance({
@@ -39,6 +42,9 @@ export abstract class AbstractItemEntity {
     name: 'update_at',
   })
   updateAt: Date;
+
+  @OneToMany(() => OwnedItemEntity, (spe) => spe.item)
+  ownerships: Relation<OwnedItemEntity>[];
 
   protected constructor(title: string) {
     this.title = title;

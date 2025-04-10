@@ -7,6 +7,7 @@ import {
   Relation,
 } from 'typeorm';
 import { PurchaseEntity } from './purchase.entity';
+import { OwnedItemEntity } from '@/store/entity/owned-item.entity';
 
 @Entity('user_balance')
 @Check('"balance" >= 0')
@@ -26,4 +27,7 @@ export class UserBalanceEntity {
 
   @OneToMany(() => PurchaseEntity, (spe) => spe.buyer)
   purchases: Relation<PurchaseEntity>[];
+
+  @OneToMany(() => OwnedItemEntity, (spe) => spe.owner)
+  ownedItems: Relation<OwnedItemEntity>[];
 }

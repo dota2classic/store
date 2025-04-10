@@ -5,6 +5,7 @@ import { HatItemEntity } from '@/store/entity/item/hat-item.entity';
 import { ProductEntity } from '@/store/entity/product.entity';
 import { ProductCategoryEntity } from '@/store/entity/product-category.entity';
 import { StoreItemType } from '@/gateway/shared-types/store-item-type';
+import { OwnedItemEntity } from '@/store/entity/owned-item.entity';
 
 export interface PopulateExtensions {
   user: {
@@ -33,8 +34,19 @@ export interface PopulateExtensions {
     getPurchase(id: string): Promise<PurchaseEntity>;
   };
 
+  owned: {
+    getOwned(steamId: string): Promise<OwnedItemEntity[]>;
+  };
+
   ready: {
     basic(): Promise<{
+      category: ProductCategoryEntity;
+      product: ProductEntity;
+      hat: HatItemEntity;
+      user: UserBalanceEntity;
+    }>;
+
+    forPurchase(): Promise<{
       category: ProductCategoryEntity;
       product: ProductEntity;
       hat: HatItemEntity;
@@ -76,6 +88,15 @@ export function createPopulate(te: TestEnvironment): PopulateExtensions {
           title,
           imageKey: image,
           type: StoreItemType.HAT,
+        });
+      },
+    },
+
+    owned: {
+      getOwned(steamId: string): Promise<OwnedItemEntity[]> {
+        return te.repo(OwnedItemEntity).find({
+          where: { steamId },
+          relations: ['item'],
         });
       },
     },
@@ -122,6 +143,22 @@ export function createPopulate(te: TestEnvironment): PopulateExtensions {
         );
         const hat = await crud.item.createHat('Hat 1', 'image');
         const user = await crud.user.createUser(100, '123456789');
+        return {
+          category,
+          product,
+          user,
+          hat,
+        };
+      },
+      async forPurchase(): Promise<{
+        category: ProductCategoryEntity;
+        product: ProductEntity;
+        hat: HatItemEntity;
+        user: UserBalanceEntity;
+      }> {
+        const { category, product, user, hat } = await this.basic();
+        product.items = [hat];
+        await te.repo(ProductEntity).save(product);
         return {
           category,
           product,

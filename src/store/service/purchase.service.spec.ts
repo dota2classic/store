@@ -3,6 +3,7 @@ import { PurchaseService } from '@/store/service/purchase.service';
 import { NotFoundException } from '@nestjs/common';
 import { v4 } from 'uuid';
 import { NoBalanceException } from '@/store/exception/no-balance.exception';
+import { OwnedItemEntity } from '@/store/entity/owned-item.entity';
 
 describe('PurchaseService', () => {
   const [te, data] = useFullModule();
@@ -16,25 +17,37 @@ describe('PurchaseService', () => {
   describe('Purchase products', () => {
     it('should purchase if it has money', async () => {
       // given
-      const category = await data.category.create('cat');
-      const user = await data.user.createUser(500);
-      const product = await data.product.createProduct(100, category.category);
+      const { category, user, hat, product } = await data.ready.forPurchase();
+      const startingBalance = user.balance;
 
       // when
       const purchase = await ps.purchase(user.steamId, product.id);
 
       // then
+
+      // balance updated
       await expect(data.user.getBalance(user.steamId)).resolves.toMatchObject({
-        balance: 400,
+        balance: startingBalance - product.price,
       });
 
+      // purchase created
       await expect(
         data.purchase.getPurchase(purchase.id),
       ).resolves.toMatchObject({
         productId: product.id,
         steamId: user.steamId,
-        purchasePrice: 100,
+        purchasePrice: product.price,
       });
+
+      // Item ownership created
+      await expect(data.owned.getOwned(user.steamId)).resolves.toEqual(
+        expect.arrayContaining([
+          expect.objectContaining<Partial<OwnedItemEntity>>({
+            itemId: hat.id,
+            steamId: user.steamId,
+          }),
+        ]),
+      );
     });
 
     it('should purchase zero cost if balance doesnt exist', async () => {

@@ -5,6 +5,7 @@ import { DataSource, Repository } from 'typeorm';
 import { PurchaseEntity } from '../entity/purchase.entity';
 import { NoBalanceException } from '../exception/no-balance.exception';
 import { ProductEntity } from '@/store/entity/product.entity';
+import { OwnedItemEntity } from '@/store/entity/owned-item.entity';
 
 @Injectable()
 export class PurchaseService {
@@ -33,6 +34,7 @@ export class PurchaseService {
 
       const product = await tx.findOne<ProductEntity>(ProductEntity, {
         where: { id: productId },
+        relations: ['items'],
       });
 
       if (!product) throw new NotFoundException('Product not found');
@@ -50,14 +52,22 @@ export class PurchaseService {
         throw new NoBalanceException();
       }
 
+      // Create a purchase
       const purchase = await tx.save(PurchaseEntity, {
         productId: product.id,
         purchasePrice: price,
         steamId,
       });
 
+      // Subtract balance
       user.balance -= price;
       await tx.save(user);
+
+      // Create purchased items
+      const ownedItems = product.items.map(
+        (item) => new OwnedItemEntity(item.id, user.steamId),
+      );
+      await tx.save(ownedItems);
 
       return purchase;
     });
