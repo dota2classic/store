@@ -1,6 +1,7 @@
 import { useFullModule } from '@/@test/useFullModule';
 import * as request from 'supertest';
 import { StoreMapper } from '@/store/mapper/store.mapper';
+import { ProductEntity } from '@/store/entity/product.entity';
 
 describe('StoreController', () => {
   const [te, data] = useFullModule();
@@ -31,5 +32,18 @@ describe('StoreController', () => {
       .expect(
         JSON.stringify(expectedResponse.map(mapper.mapCategoryWithProductPage)),
       );
+  });
+
+  it('should return product with items', async () => {
+    // given
+    const { product, hat } = await data.ready.basic();
+    product.items = [hat];
+    await te.repo(ProductEntity).save(product);
+
+    // when + then
+    await request(te.app.getHttpServer())
+      .get(`/store/product/${product.id}`)
+      .expect(200)
+      .expect(JSON.stringify(mapper.mapProduct(product)));
   });
 });

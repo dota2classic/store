@@ -89,6 +89,9 @@ export class StoreService {
   }
 
   public async getProduct(id: string) {
-    return this.storeProductEntityRepository.findOne({ where: { id } });
+    return this.storeProductEntityRepository.findOne({
+      where: { id },
+      relations: ['items'],
+    });
   }
 }

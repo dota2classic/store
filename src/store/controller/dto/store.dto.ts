@@ -9,6 +9,10 @@ export class HatItemDto extends GenericItemDto {
   imageKey: string;
 }
 
+export class ItemHolder {
+  hat?: HatItemDto;
+}
+
 export class ProductDto {
   id: string;
 
@@ -16,6 +20,8 @@ export class ProductDto {
   title: string;
   price: number;
   categoryId: string;
+
+  items: ItemHolder[];
 }
 
 export class ProductPageDto extends Page<ProductDto> {
