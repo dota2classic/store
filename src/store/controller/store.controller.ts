@@ -14,6 +14,7 @@ import {
   CategoryDto,
   CategoryWithProductPageDto,
   CreateProductDto,
+  ItemHolder,
   MakePurchaseDto,
   StoreProductPurchaseDto,
   UpdateProductDto,
@@ -45,6 +46,22 @@ export class StoreController {
   @Get('/category/list')
   public async listCategories(): Promise<CategoryDto[]> {
     return this.storeService.getCategories();
+  }
+
+  @Get('/item')
+  @ApiQuery({
+    type: 'string',
+    name: 'steamId',
+    required: true,
+  })
+  public async getOwnedItems(
+    @Query('steamId') steamId: string,
+  ): Promise<ItemHolder[]> {
+    return this.purchaseService
+      .getItems(steamId)
+      .then((items) =>
+        items.map((item) => this.mapper.mapAbstractItem(item.item)),
+      );
   }
 
   @Get('/purchase')

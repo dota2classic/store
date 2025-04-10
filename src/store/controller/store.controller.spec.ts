@@ -46,4 +46,15 @@ describe('StoreController', () => {
       .expect(200)
       .expect(JSON.stringify(mapper.mapProduct(product)));
   });
+
+  it('should return owned items', async () => {
+    // given
+    const { user, hat } = await data.ready.userOwner();
+
+    // when + then
+    await request(te.app.getHttpServer())
+      .get(`/store/item?steamId=${user.steamId}`)
+      .expect(200)
+      .expect(JSON.stringify([mapper.mapAbstractItem(hat)]));
+  });
 });

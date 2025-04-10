@@ -52,6 +52,13 @@ export interface PopulateExtensions {
       hat: HatItemEntity;
       user: UserBalanceEntity;
     }>;
+
+    userOwner(): Promise<{
+      category: ProductCategoryEntity;
+      product: ProductEntity;
+      hat: HatItemEntity;
+      user: UserBalanceEntity;
+    }>;
   };
 }
 
@@ -159,6 +166,25 @@ export function createPopulate(te: TestEnvironment): PopulateExtensions {
         const { category, product, user, hat } = await this.basic();
         product.items = [hat];
         await te.repo(ProductEntity).save(product);
+        return {
+          category,
+          product,
+          user,
+          hat,
+        };
+      },
+      async userOwner(): Promise<{
+        category: ProductCategoryEntity;
+        product: ProductEntity;
+        hat: HatItemEntity;
+        user: UserBalanceEntity;
+      }> {
+        const { category, product, user, hat } = await this.forPurchase();
+
+        await te.repo(OwnedItemEntity).save({
+          steamId: user.steamId,
+          itemId: hat.id,
+        });
         return {
           category,
           product,

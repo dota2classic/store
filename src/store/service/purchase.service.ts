@@ -16,6 +16,8 @@ export class PurchaseService {
     private readonly storeProductEntityRepository: Repository<ProductEntity>,
     @InjectRepository(PurchaseEntity)
     private readonly storeProductPurchaseEntityRepository: Repository<PurchaseEntity>,
+    @InjectRepository(OwnedItemEntity)
+    private readonly ownedItemEntityRepository: Repository<OwnedItemEntity>,
     private readonly ds: DataSource,
   ) {}
 
@@ -79,6 +81,13 @@ export class PurchaseService {
         steamId,
       },
       relations: ['product'],
+    });
+  }
+
+  public async getItems(steamId: string) {
+    return this.ownedItemEntityRepository.find({
+      where: { steamId },
+      relations: ['item'],
     });
   }
 }
