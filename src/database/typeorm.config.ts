@@ -3,6 +3,7 @@ import { DataSource } from 'typeorm';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { Entities } from './entities';
 import configuration from '@/config/configuration';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 export const getTypeormConfig = (
   cs: ConfigService,
@@ -21,6 +22,7 @@ export const getTypeormConfig = (
     migrationsRun: false,
     migrationsTableName: 'store_migrations',
     logging: true,
+    namingStrategy: new SnakeNamingStrategy(),
   };
 };
 

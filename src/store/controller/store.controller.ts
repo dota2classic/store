@@ -8,10 +8,10 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { StoreCategoryEntity } from '@/store/entity/store-category.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
+  CategoryDto,
   CategoryWithProductPageDto,
   CreateProductDto,
   MakePurchaseDto,
@@ -22,13 +22,14 @@ import { StoreService } from '@/store/service/store.service';
 import { StoreMapper } from '@/store/mapper/store.mapper';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { PurchaseService } from '@/store/service/purchase.service';
+import { ProductCategoryEntity } from '@/store/entity/product-category.entity';
 
 @Controller('store')
 @ApiTags('store')
 export class StoreController {
   constructor(
-    @InjectRepository(StoreCategoryEntity)
-    private readonly storeCategoryEntityRepository: Repository<StoreCategoryEntity>,
+    @InjectRepository(ProductCategoryEntity)
+    private readonly storeCategoryEntityRepository: Repository<ProductCategoryEntity>,
     private readonly storeService: StoreService,
     private readonly purchaseService: PurchaseService,
     private readonly mapper: StoreMapper,
@@ -39,6 +40,11 @@ export class StoreController {
     return this.storeService
       .getCategoriesWithProductPage()
       .then((data) => data.map(this.mapper.mapCategoryWithProductPage));
+  }
+
+  @Get('/category/list')
+  public async listCategories(): Promise<CategoryDto[]> {
+    return this.storeService.getCategories();
   }
 
   @Get('/purchase')
@@ -65,6 +71,12 @@ export class StoreController {
   }
 
   // Product
+
+  @Get('/product/:id')
+  public async getProduct(@Param('id') id: string) {
+    return this.storeService.getProduct(id).then(this.mapper.mapProduct);
+  }
+
   @Post('/product')
   public async createProduct(@Body() dto: CreateProductDto) {
     return this.storeService

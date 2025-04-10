@@ -7,20 +7,20 @@ import {
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
-import { StoreProductEntity } from './store-product.entity';
 import { UserBalanceEntity } from './user-balance.entity';
+import { ProductEntity } from '@/store/entity/product.entity';
 
 @Entity('store_product_purchase')
-export class StoreProductPurchaseEntity {
+export class PurchaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => StoreProductEntity, (p) => p.purchases)
+  @ManyToOne(() => ProductEntity, (p) => p.purchases)
   @JoinColumn({
     referencedColumnName: 'id',
     name: 'product_id',
   })
-  product: Relation<StoreProductEntity>;
+  product: Relation<ProductEntity>;
 
   @Column({
     name: 'product_id',

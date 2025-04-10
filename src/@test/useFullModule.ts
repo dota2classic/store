@@ -4,7 +4,6 @@ import {
   StartedPostgreSqlContainer,
 } from '@testcontainers/postgresql';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
-import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
 import { INestApplication } from '@nestjs/common';
 import { ObjectLiteral, Repository } from 'typeorm';
 import { Entities } from '@/database/entities';
@@ -25,7 +24,7 @@ export interface TestEnvironment {
   // ebus: EventBus;
   // ebusSpy: SpyInstance;
   service<R>(c: Constructor<R>): R;
-  repo<R extends ObjectLiteral>(c: EntityClassOrSchema): Repository<R>;
+  repo<R extends ObjectLiteral>(c: Constructor<R>): Repository<R>;
 }
 
 export function useFullModule(): [TestEnvironment, PopulateExtensions] {

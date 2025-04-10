@@ -3,17 +3,20 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
 } from 'typeorm';
-import { StoreProductPurchaseEntity } from './store-product-purchase.entity';
-import { StoreCategoryEntity } from '@/store/entity/store-category.entity';
+import { PurchaseEntity } from './purchase.entity';
+import { AbstractItemEntity } from '@/store/entity/item/abstract-item.entity';
+import { ProductCategoryEntity } from '@/store/entity/product-category.entity';
 
 @Entity('store_product')
-export class StoreProductEntity {
+export class ProductEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -33,15 +36,19 @@ export class StoreProductEntity {
   })
   title: string;
 
-  @OneToMany(() => StoreProductPurchaseEntity, (spe) => spe.product)
-  purchases: Relation<StoreProductPurchaseEntity>[];
+  @OneToMany(() => PurchaseEntity, (spe) => spe.product)
+  purchases: Relation<PurchaseEntity>[];
 
-  @ManyToOne(() => StoreCategoryEntity, (p) => p.products)
+  @ManyToMany(() => AbstractItemEntity)
+  @JoinTable()
+  items: Relation<AbstractItemEntity>[];
+
+  @ManyToOne(() => ProductCategoryEntity, (p) => p.products)
   @JoinColumn({
     referencedColumnName: 'category',
     name: 'category',
   })
-  category: Relation<StoreCategoryEntity>;
+  category: Relation<ProductCategoryEntity>;
 
   @Column({
     name: 'category',

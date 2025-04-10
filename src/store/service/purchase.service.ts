@@ -2,26 +2,26 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserBalanceEntity } from '../entity/user-balance.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import { StoreProductEntity } from '../entity/store-product.entity';
-import { StoreProductPurchaseEntity } from '../entity/store-product-purchase.entity';
+import { PurchaseEntity } from '../entity/purchase.entity';
 import { NoBalanceException } from '../exception/no-balance.exception';
+import { ProductEntity } from '@/store/entity/product.entity';
 
 @Injectable()
 export class PurchaseService {
   constructor(
     @InjectRepository(UserBalanceEntity)
     private readonly userBalanceEntityRepository: Repository<UserBalanceEntity>,
-    @InjectRepository(StoreProductEntity)
-    private readonly storeProductEntityRepository: Repository<StoreProductEntity>,
-    @InjectRepository(StoreProductPurchaseEntity)
-    private readonly storeProductPurchaseEntityRepository: Repository<StoreProductPurchaseEntity>,
+    @InjectRepository(ProductEntity)
+    private readonly storeProductEntityRepository: Repository<ProductEntity>,
+    @InjectRepository(PurchaseEntity)
+    private readonly storeProductPurchaseEntityRepository: Repository<PurchaseEntity>,
     private readonly ds: DataSource,
   ) {}
 
   public async purchase(
     steamId: string,
     productId: string,
-  ): Promise<StoreProductPurchaseEntity> {
+  ): Promise<PurchaseEntity> {
     return this.ds.transaction(async (tx) => {
       await this.ds
         .createQueryBuilder()
@@ -31,7 +31,7 @@ export class PurchaseService {
         .orIgnore()
         .execute();
 
-      const product = await tx.findOne<StoreProductEntity>(StoreProductEntity, {
+      const product = await tx.findOne<ProductEntity>(ProductEntity, {
         where: { id: productId },
       });
 
@@ -50,7 +50,7 @@ export class PurchaseService {
         throw new NoBalanceException();
       }
 
-      const purchase = await tx.save(StoreProductPurchaseEntity, {
+      const purchase = await tx.save(PurchaseEntity, {
         productId: product.id,
         purchasePrice: price,
         steamId,
@@ -63,9 +63,7 @@ export class PurchaseService {
     });
   }
 
-  public async getPurchases(
-    steamId: string,
-  ): Promise<StoreProductPurchaseEntity[]> {
+  public async getPurchases(steamId: string): Promise<PurchaseEntity[]> {
     return this.storeProductPurchaseEntityRepository.find({
       where: {
         steamId,

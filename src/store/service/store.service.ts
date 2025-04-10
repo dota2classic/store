@@ -1,23 +1,26 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { StoreCategoryEntity } from '@/store/entity/store-category.entity';
-import { StoreProductEntity } from '@/store/entity/store-product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
-import { StoreProductPurchaseEntity } from '@/store/entity/store-product-purchase.entity';
+import { DataSource, In, Repository } from 'typeorm';
+import { PurchaseEntity } from '@/store/entity/purchase.entity';
+import { AbstractItemEntity } from '@/store/entity/item/abstract-item.entity';
+import { ProductCategoryEntity } from '@/store/entity/product-category.entity';
+import { ProductEntity } from '@/store/entity/product.entity';
 
 @Injectable()
 export class StoreService {
   constructor(
-    @InjectRepository(StoreCategoryEntity)
-    private readonly storeCategoryEntityRepository: Repository<StoreCategoryEntity>,
-    @InjectRepository(StoreProductEntity)
-    private readonly storeProductEntityRepository: Repository<StoreProductEntity>,
-    @InjectRepository(StoreProductPurchaseEntity)
-    private readonly storeProductPurchaseEntityRepository: Repository<StoreProductPurchaseEntity>,
+    @InjectRepository(ProductCategoryEntity)
+    private readonly storeCategoryEntityRepository: Repository<ProductCategoryEntity>,
+    @InjectRepository(ProductEntity)
+    private readonly storeProductEntityRepository: Repository<ProductEntity>,
+    @InjectRepository(PurchaseEntity)
+    private readonly storeProductPurchaseEntityRepository: Repository<PurchaseEntity>,
     private readonly ds: DataSource,
   ) {}
 
-  public async getCategoriesWithProductPage(): Promise<StoreCategoryEntity[]> {
+  public async getCategoriesWithProductPage(): Promise<
+    ProductCategoryEntity[]
+  > {
     return this.storeCategoryEntityRepository.find({
       relations: ['products'],
     });
@@ -28,7 +31,7 @@ export class StoreService {
     title: string,
     imageKey: string,
     price: number,
-  ): Promise<StoreProductEntity> {
+  ): Promise<ProductEntity> {
     return this.storeProductEntityRepository.save({
       categoryId: category,
       title,
@@ -46,7 +49,7 @@ export class StoreService {
   ) {
     return this.ds.transaction(async (tx) => {
       const updates = await tx
-        .getRepository(StoreProductEntity)
+        .getRepository(ProductEntity)
         .update(
           { id },
           { categoryId: category, title, image: imageKey, price },
@@ -56,18 +59,36 @@ export class StoreService {
         throw new NotFoundException();
       }
 
-      return tx
-        .getRepository(StoreProductEntity)
-        .findOneOrFail({ where: { id } });
+      return tx.getRepository(ProductEntity).findOneOrFail({ where: { id } });
+    });
+  }
+
+  public async setItemsForProduct(id: string, itemIds: string[]) {
+    await this.ds.transaction(async (tx) => {
+      const items = await tx.findBy<AbstractItemEntity>(AbstractItemEntity, {
+        id: In(itemIds),
+      });
+      if (items.length !== itemIds.length) {
+        throw new NotFoundException('No such items');
+      }
+      const t = await tx.findOneBy<ProductEntity>(ProductEntity, { id });
+      t.items = items;
+      await tx.save(t);
     });
   }
 
   public async deleteProduct(id: string) {
     await this.ds.transaction(async (tx) => {
-      await tx
-        .getRepository(StoreProductPurchaseEntity)
-        .delete({ productId: id });
-      await tx.getRepository(StoreProductEntity).delete({ id });
+      await tx.getRepository(PurchaseEntity).delete({ productId: id });
+      await tx.getRepository(ProductEntity).delete({ id });
     });
+  }
+
+  public async getCategories() {
+    return this.storeCategoryEntityRepository.find();
+  }
+
+  public async getProduct(id: string) {
+    return this.storeProductEntityRepository.findOne({ where: { id } });
   }
 }

@@ -1,8 +1,10 @@
 import { TestEnvironment } from '@/@test/useFullModule';
 import { UserBalanceEntity } from '@/store/entity/user-balance.entity';
-import { StoreProductEntity } from '@/store/entity/store-product.entity';
-import { StoreProductPurchaseEntity } from '@/store/entity/store-product-purchase.entity';
-import { StoreCategoryEntity } from '@/store/entity/store-category.entity';
+import { PurchaseEntity } from '@/store/entity/purchase.entity';
+import { HatItemEntity } from '@/store/entity/item/hat-item.entity';
+import { ProductEntity } from '@/store/entity/product.entity';
+import { ProductCategoryEntity } from '@/store/entity/product-category.entity';
+import { StoreItemType } from '@/gateway/shared-types/store-item-type';
 
 export interface PopulateExtensions {
   user: {
@@ -16,20 +18,33 @@ export interface PopulateExtensions {
       category: string,
       title?: string,
       imageKey?: string,
-    ): Promise<StoreProductEntity>;
+    ): Promise<ProductEntity>;
   };
 
   category: {
-    create(category: string): Promise<StoreCategoryEntity>;
+    create(category: string): Promise<ProductCategoryEntity>;
+  };
+
+  item: {
+    createHat(title: string, image: string): Promise<HatItemEntity>;
   };
 
   purchase: {
-    getPurchase(id: string): Promise<StoreProductPurchaseEntity>;
+    getPurchase(id: string): Promise<PurchaseEntity>;
+  };
+
+  ready: {
+    basic(): Promise<{
+      category: ProductCategoryEntity;
+      product: ProductEntity;
+      hat: HatItemEntity;
+      user: UserBalanceEntity;
+    }>;
   };
 }
 
 export function createPopulate(te: TestEnvironment): PopulateExtensions {
-  return {
+  const crud: Omit<PopulateExtensions, 'ready'> = {
     user: {
       createUser(
         balance: number,
@@ -48,9 +63,19 @@ export function createPopulate(te: TestEnvironment): PopulateExtensions {
     },
 
     category: {
-      create(category: string): Promise<StoreCategoryEntity> {
-        return te.repo<StoreCategoryEntity>(StoreCategoryEntity).save({
+      create(category: string): Promise<ProductCategoryEntity> {
+        return te.repo<ProductCategoryEntity>(ProductCategoryEntity).save({
           category,
+        });
+      },
+    },
+
+    item: {
+      createHat(title: string, image: string): Promise<HatItemEntity> {
+        return te.repo<HatItemEntity>(HatItemEntity).save({
+          title,
+          imageKey: image,
+          type: StoreItemType.HAT,
         });
       },
     },
@@ -62,7 +87,7 @@ export function createPopulate(te: TestEnvironment): PopulateExtensions {
         title = 'Product',
         image = 'public/image.png',
       ) {
-        return te.repo<StoreProductEntity>(StoreProductEntity).save({
+        return te.repo<ProductEntity>(ProductEntity).save({
           price,
           title,
           image,
@@ -72,10 +97,37 @@ export function createPopulate(te: TestEnvironment): PopulateExtensions {
     },
 
     purchase: {
-      getPurchase(id: string): Promise<StoreProductPurchaseEntity> {
+      getPurchase(id: string): Promise<PurchaseEntity> {
         return te
-          .repo<StoreProductPurchaseEntity>(StoreProductPurchaseEntity)
+          .repo<PurchaseEntity>(PurchaseEntity)
           .findOneOrFail({ where: { id } });
+      },
+    },
+  };
+  return {
+    ...crud,
+    ready: {
+      async basic(): Promise<{
+        category: ProductCategoryEntity;
+        product: ProductEntity;
+        hat: HatItemEntity;
+        user: UserBalanceEntity;
+      }> {
+        const category = await crud.category.create('hats');
+        const product = await crud.product.createProduct(
+          50,
+          category.category,
+          'Product 1',
+          'Image 1',
+        );
+        const hat = await crud.item.createHat('Hat 1', 'image');
+        const user = await crud.user.createUser(100, '123456789');
+        return {
+          category,
+          product,
+          user,
+          hat,
+        };
       },
     },
   };

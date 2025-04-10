@@ -1,33 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { StoreCategoryEntity } from '@/store/entity/store-category.entity';
 import {
   CategoryWithProductPageDto,
   ProductDto,
   StoreProductPurchaseDto,
 } from '@/store/controller/dto/store.dto';
-import { StoreProductEntity } from '@/store/entity/store-product.entity';
-import { StoreProductPurchaseEntity } from '@/store/entity/store-product-purchase.entity';
+import { PurchaseEntity } from '@/store/entity/purchase.entity';
+import { ProductEntity } from '@/store/entity/product.entity';
+import { ProductCategoryEntity } from '@/store/entity/product-category.entity';
 
 @Injectable()
 export class StoreMapper {
-  public mapProduct = (product: StoreProductEntity): ProductDto => ({
+  public mapProduct = (product: ProductEntity): ProductDto => ({
     id: product.id,
     price: product.price,
     title: product.title,
     imageKey: product.image,
+    categoryId: product.categoryId,
   });
 
   public mapCategoryWithProductPage = (
-    category: StoreCategoryEntity,
+    category: ProductCategoryEntity,
   ): CategoryWithProductPageDto => {
     return {
       category: category.category,
       products: category.products.map(this.mapProduct),
     };
   };
-  public mapPurchase = (
-    purchase: StoreProductPurchaseEntity,
-  ): StoreProductPurchaseDto => {
+  public mapPurchase = (purchase: PurchaseEntity): StoreProductPurchaseDto => {
     return {
       id: purchase.id,
       steamId: purchase.steamId,
